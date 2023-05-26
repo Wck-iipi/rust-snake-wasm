@@ -18,5 +18,6 @@ features = [
   'Element',
   'CanvasRenderingContext2d',
   'HtmlCanvasElement',
-  'Window'
+  'Window',
+  'KeyboardEvent',
 ]
