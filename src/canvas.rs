@@ -1,8 +1,8 @@
 use wasm_bindgen::prelude::*;
 
-use web_sys::Document;
 use web_sys::CanvasRenderingContext2d;
 use web_sys::HtmlCanvasElement;
+use web_sys::window;
 
 pub struct Canvas {
     pub canvas: HtmlCanvasElement,
@@ -14,8 +14,9 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    pub fn new(document: Document, width: u32, height: u32) -> Canvas {
-        let canvas = document.get_element_by_id("canvas").unwrap();
+    pub fn new(attr_id: &str, width: u32, height: u32) -> Canvas {
+        // let canvas = document().get_element_by_id("canvas").unwrap();
+        let canvas = window().unwrap().document().unwrap().get_element_by_id(attr_id).unwrap();
         let canvas: web_sys::HtmlCanvasElement = canvas
             .dyn_into::<web_sys::HtmlCanvasElement>()
             .map_err(|_| ())
@@ -43,8 +44,8 @@ impl Canvas {
         self.context.clear_rect(
             0.0,
             0.0,
-            self.scaled_width as f64,
-            self.scaled_height as f64,
+            (self.scaled_width * self.width) as f64,
+            (self.scaled_height* self.height) as f64,
         );
     }
 

@@ -1,5 +1,7 @@
-use canvas::Canvas;
-use direction::Direction;
+use js_sys::Math;
+
+use crate::canvas::Canvas;
+use crate::movement_direction::Movement_direction;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 struct Block(u32, u32);
@@ -8,32 +10,22 @@ struct Block(u32, u32);
 pub struct Snake {
     head: Block,
     tail: Vec<Block>,
-    food: Block,
     height: u32,
     width: u32,
-    direction: Option<Direction>,
-    next_direction: Option<Direction>,
-    last_direction: Direction,
+    direction: Option<Movement_direction>,
+    next_direction: Option<Movement_direction>,
+    last_direction: Movement_direction,
+    food: Block,
 }
 
 impl Snake {
     pub fn new(width: u32, height: u32) -> Snake {
-        let head_x: u32 = js! {return Math.floor(Math.random() * @{width})}
-            .try_into()
-            .unwrap();
-
-        let head_y: u32 = js! {return Math.floor(Math.random() * @{height})}
-            .try_into()
-            .unwrap();
-
+        let head_x: u32 = (Math::random() * f64::from(width)) as u32;
+        let head_y: u32 = (Math::random() * f64::from(height)) as u32;
         let head = Block(head_x, head_y);
 
-        let food_x: u32 = js! { return Math.floor(Math.random() * @{width}) }
-            .try_into()
-            .unwrap();
-        let food_y: u32 = js! { return Math.floor(Math.random() * @{height}) }
-            .try_into()
-            .unwrap();
+        let food_x: u32 = (Math::random() * f64::from(width)) as u32;
+        let food_y: u32 = (Math::random() * f64::from(height)) as u32;
 
         let food = Block(food_x, food_y);
         let tail = Vec::new();
@@ -46,14 +38,14 @@ impl Snake {
             width,
             direction: None,
             next_direction: None,
-            last_direction: Direction::Right,
+            last_direction: Movement_direction::Right,
         }
     }
 
-    pub fn change_direction(&mut self, direction: Direction) {
-        if !self.last_direction.opposite(direction) && self.direction.is_none() {
+    pub fn change_direction(&mut self, direction: Movement_direction) {
+        if !self.last_direction.is_in_opposite_direction(direction) && self.direction.is_none() {
             self.direction = Some(direction)
-        } else if self.direction.iter().any(|d| !d.opposite(direction)) {
+        } else if self.direction.iter().any(|d| !d.is_in_opposite_direction(direction)) {
             self.next_direction = Some(direction)
         }
     }
@@ -63,13 +55,17 @@ impl Snake {
         self.last_direction = direction;
 
         let new_head = match direction {
-            Direction::Up => Block(
+            Movement_direction::Up => Block(
                 (self.head.0) % self.width,
                 (self.head.1.checked_sub(1).unwrap_or(self.height - 1)) % self.height,
             ),
-            Direction::Down => Block((self.head.0) % self.width, (self.head.1 + 1) % self.height),
-            Direction::Right => Block((self.head.0 + 1) % self.width, (self.head.1) % self.height),
-            Direction::Left => Block(
+            Movement_direction::Down => {
+                Block((self.head.0) % self.width, (self.head.1 + 1) % self.height)
+            }
+            Movement_direction::Right => {
+                Block((self.head.0 + 1) % self.width, (self.head.1) % self.height)
+            }
+            Movement_direction::Left => Block(
                 (self.head.0.checked_sub(1).unwrap_or(self.width - 1)) % self.width,
                 (self.head.1) % self.height,
             ),
@@ -86,14 +82,8 @@ impl Snake {
         if self.head == self.food {
             let mut food = self.food;
             while food == self.head || self.tail.contains(&food) {
-                let food_x: u32 = js! { return Math.floor(Math.random() * @{self.width}) }
-                    .try_into()
-                    .unwrap();
-
-                let food_y: u32 = js! { return Math.floor(Math.random() * @{self.height}) }
-                    .try_into()
-                    .unwrap();
-
+                let food_x: u32 = (Math::random() * f64::from(self.width)) as u32;
+                let food_y: u32 = (Math::random() * f64::from(self.height)) as u32;
                 food = Block(food_x, food_y);
             }
             self.food = food;
@@ -103,7 +93,7 @@ impl Snake {
     }
 
     pub fn draw(&self, canvas: &Canvas) {
-        canvas.clear_all();
+        canvas.clear();
         canvas.draw(self.head.0, self.head.1, "green");
         for &Block(x, y) in &self.tail {
             canvas.draw(x, y, "lightgreen ");

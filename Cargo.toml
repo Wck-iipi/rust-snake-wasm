@@ -20,4 +20,6 @@ features = [
   'HtmlCanvasElement',
   'Window',
   'KeyboardEvent',
+  'EventListener',
+  'Event',
 ]
