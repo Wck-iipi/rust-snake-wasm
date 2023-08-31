@@ -3,7 +3,7 @@ Snake game has been made with Rust and works on browser with the help of WASM.
 
 The game uses js-sys, wasm-bindgen and web-sys libraries to get the Rust code on browser.
 
-![snake_game](https://github.com/Wck-iipi/rust-snake-wasm/assets/110763795/0d046e66-5247-4010-8d21-af9d2949c4a7)
+![snakeImproved](https://github.com/Wck-iipi/rust-snake-wasm/assets/110763795/1d9c23b2-531f-4259-9b7d-0add70bc9c96)
 
 
 ## How to run
