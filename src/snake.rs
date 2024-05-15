@@ -16,6 +16,9 @@ pub struct Snake {
     next_direction: Option<MovementDirection>,
     last_direction: MovementDirection,
     food: Block,
+    total_score: u32,
+    start_game: bool,
+    max_score: u32,
 }
 
 impl Snake {
@@ -39,9 +42,11 @@ impl Snake {
             direction: None,
             next_direction: None,
             last_direction: MovementDirection::Right,
+            total_score: 0,
+            start_game: false,
+            max_score: 0,
         }
     }
-
     pub fn change_direction(&mut self, direction: MovementDirection) {
         if !self.last_direction.is_in_opposite_direction(direction) && self.direction.is_none() {
             self.direction = Some(direction)
@@ -84,6 +89,7 @@ impl Snake {
 
         self.head = new_head;
         if self.head == self.food {
+            self.total_score += 1;
             let mut food = self.food;
             while food == self.head || self.tail.contains(&food) {
                 let food_x: u32 = (Math::random() * f64::from(self.width)) as u32;
@@ -98,10 +104,38 @@ impl Snake {
 
     pub fn draw(&self, canvas: &Canvas) {
         canvas.clear();
-        canvas.draw(self.head.0, self.head.1, "green");
-        for &Block(x, y) in &self.tail {
-            canvas.draw(x, y, "lightgreen ");
+        if !self.start_game {
+            canvas.draw_text(
+                format!("Max score: {}", self.max_score.to_string()).as_str(),
+                canvas.scaled_width,
+                canvas.scaled_height + 80,
+                "black",
+            );
+            canvas.draw_rect(
+                canvas.scaled_width + 100,
+                canvas.scaled_height + 335,
+                300,
+                100,
+                "red",
+            );
+            canvas.draw_text(
+                "Start the game",
+                canvas.scaled_width + 150,
+                canvas.scaled_height + 400,
+                "black",
+            );
+        } else {
+            canvas.draw(self.head.0, self.head.1, "green");
+            for &Block(x, y) in &self.tail {
+                canvas.draw(x, y, "lightgreen ");
+            }
+            canvas.draw(self.food.0, self.food.1, "red");
+            canvas.draw_text(
+                self.total_score.to_string().as_str(),
+                canvas.scaled_width + 470,
+                canvas.scaled_height + 40,
+                "black",
+            );
         }
-        canvas.draw(self.food.0, self.food.1, "red");
     }
 }

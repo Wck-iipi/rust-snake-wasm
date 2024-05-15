@@ -22,4 +22,5 @@ features = [
   'KeyboardEvent',
   'EventListener',
   'Event',
+  'console',
 ]

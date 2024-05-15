@@ -10,8 +10,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{closure::Closure, JsCast};
-use web_sys::window;
-use web_sys::KeyboardEvent;
+use web_sys::{console, window, KeyboardEvent};
 
 thread_local! {
     static GAME: Rc<RefCell<Snake>> =
@@ -72,5 +71,6 @@ pub fn render() {
 
         let canvas = Canvas::new("canvas", 40, 40);
         game.borrow().draw(&canvas);
+        console::log_1(&"Running ".into());
     });
 }

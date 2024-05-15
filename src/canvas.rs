@@ -7,10 +7,10 @@ use web_sys::HtmlCanvasElement;
 pub struct Canvas {
     pub canvas: HtmlCanvasElement,
     pub context: CanvasRenderingContext2d,
-    scaled_width: u32,
-    scaled_height: u32,
-    width: u32,
-    height: u32,
+    pub scaled_width: u32,
+    pub scaled_height: u32,
+    pub width: u32,
+    pub height: u32,
 }
 
 impl Canvas {
@@ -37,14 +37,14 @@ impl Canvas {
         let scaled_width = canvas.width() / width;
         let scaled_height = canvas.height() / height;
 
-        Canvas {
+        return Canvas {
             canvas,
             context,
             scaled_width,
             scaled_height,
             width,
             height,
-        }
+        };
     }
 
     pub fn clear(&self) {
@@ -81,6 +81,7 @@ impl Canvas {
     }
 
     pub fn draw_text(&self, text: &str, x: u32, y: u32, color: &str) {
+        self.context.set_font("30px Arial");
         self.context.set_fill_style(&JsValue::from_str(color));
         let _ = self.context.fill_text(text, x as f64, y as f64);
     }
