@@ -1,8 +1,8 @@
 use wasm_bindgen::prelude::*;
 
+use web_sys::window;
 use web_sys::CanvasRenderingContext2d;
 use web_sys::HtmlCanvasElement;
-use web_sys::window;
 
 pub struct Canvas {
     pub canvas: HtmlCanvasElement,
@@ -16,19 +16,27 @@ pub struct Canvas {
 impl Canvas {
     pub fn new(attr_id: &str, width: u32, height: u32) -> Canvas {
         // let canvas = document().get_element_by_id("canvas").unwrap();
-        let canvas = window().unwrap().document().unwrap().get_element_by_id(attr_id).unwrap();
+        let canvas = window()
+            .unwrap()
+            .document()
+            .unwrap()
+            .get_element_by_id(attr_id)
+            .expect("Wrong id given");
+
         let canvas: web_sys::HtmlCanvasElement = canvas
             .dyn_into::<web_sys::HtmlCanvasElement>()
-            .map_err(|_| ())
-            .unwrap();
+            .expect("Not a canvas element");
+
         let context = canvas
             .get_context("2d")
-            .unwrap()
+            .expect("Context not found")
             .unwrap()
             .dyn_into::<web_sys::CanvasRenderingContext2d>()
             .unwrap();
+
         let scaled_width = canvas.width() / width;
         let scaled_height = canvas.height() / height;
+
         Canvas {
             canvas,
             context,
@@ -45,7 +53,7 @@ impl Canvas {
             0.0,
             0.0,
             (self.scaled_width * self.width) as f64,
-            (self.scaled_height* self.height) as f64,
+            (self.scaled_height * self.height) as f64,
         );
     }
 
@@ -74,6 +82,6 @@ impl Canvas {
 
     pub fn draw_text(&self, text: &str, x: u32, y: u32, color: &str) {
         self.context.set_fill_style(&JsValue::from_str(color));
-        self.context.fill_text(text, x as f64, y as f64);
+        let _ = self.context.fill_text(text, x as f64, y as f64);
     }
 }

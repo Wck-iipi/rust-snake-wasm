@@ -1,34 +1,34 @@
-#[derive (Debug, PartialEq, Copy, Clone)]
-pub enum Movement_direction {
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum MovementDirection {
     Up,
     Down,
     Left,
     Right,
 }
 
-impl Movement_direction {
-    pub fn is_in_opposite_direction(self, direction: Movement_direction) -> bool {
+impl MovementDirection {
+    pub fn is_in_opposite_direction(self, direction: MovementDirection) -> bool {
         match self {
-            Movement_direction::Up => {
-                if direction == Movement_direction::Down {
+            MovementDirection::Up => {
+                if direction == MovementDirection::Down {
                     return true;
                 }
-            },
-            Movement_direction::Down => {
-                if direction == Movement_direction::Up {
+            }
+            MovementDirection::Down => {
+                if direction == MovementDirection::Up {
                     return true;
                 }
-            },
-            Movement_direction::Left => {
-                if direction == Movement_direction::Right {
+            }
+            MovementDirection::Left => {
+                if direction == MovementDirection::Right {
                     return true;
                 }
-            },
-            Movement_direction::Right => {
-                if direction == Movement_direction::Left {
+            }
+            MovementDirection::Right => {
+                if direction == MovementDirection::Left {
                     return true;
                 }
-            },
+            }
         }
         return false;
     }

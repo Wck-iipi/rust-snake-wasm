@@ -4,14 +4,14 @@ mod snake;
 
 use canvas::Canvas;
 use js_sys::Function;
-use movement_direction::Movement_direction;
+use movement_direction::MovementDirection;
 use snake::Snake;
 use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{closure::Closure, JsCast};
-use web_sys::KeyboardEvent;
 use web_sys::window;
+use web_sys::KeyboardEvent;
 
 thread_local! {
     static GAME: Rc<RefCell<Snake>> =
@@ -25,10 +25,10 @@ thread_local! {
     static HANDLE_KEYDOWN: Closure<dyn FnMut(KeyboardEvent)> =
     Closure::wrap(Box::new(|evt: KeyboardEvent| GAME.with(|game| {
       let direction = match &evt.key()[..] {
-        "ArrowUp" => Some(Movement_direction::Up),
-        "ArrowRight" => Some(Movement_direction::Right),
-        "ArrowDown" => Some(Movement_direction::Down),
-        "ArrowLeft" => Some(Movement_direction::Left),
+        "ArrowUp" => Some(MovementDirection::Up),
+        "ArrowRight" => Some(MovementDirection::Right),
+        "ArrowDown" => Some(MovementDirection::Down),
+        "ArrowLeft" => Some(MovementDirection::Left),
         _ => None,
       };
 
@@ -51,12 +51,12 @@ pub fn start() {
     });
     HANDLE_KEYDOWN.with(|handle_keydown| {
         window()
-        .unwrap_throw()
-        .add_event_listener_with_callback(
-            "keydown",
-            handle_keydown.as_ref().dyn_ref::<Function>().unwrap_throw(),
-        )
-        .unwrap_throw();
+            .unwrap_throw()
+            .add_event_listener_with_callback(
+                "keydown",
+                handle_keydown.as_ref().dyn_ref::<Function>().unwrap_throw(),
+            )
+            .unwrap_throw();
     });
 
     render();

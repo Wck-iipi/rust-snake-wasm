@@ -1,7 +1,7 @@
 use js_sys::Math;
 
 use crate::canvas::Canvas;
-use crate::movement_direction::Movement_direction;
+use crate::movement_direction::MovementDirection;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 struct Block(u32, u32);
@@ -12,9 +12,9 @@ pub struct Snake {
     tail: Vec<Block>,
     height: u32,
     width: u32,
-    direction: Option<Movement_direction>,
-    next_direction: Option<Movement_direction>,
-    last_direction: Movement_direction,
+    direction: Option<MovementDirection>,
+    next_direction: Option<MovementDirection>,
+    last_direction: MovementDirection,
     food: Block,
 }
 
@@ -38,14 +38,18 @@ impl Snake {
             width,
             direction: None,
             next_direction: None,
-            last_direction: Movement_direction::Right,
+            last_direction: MovementDirection::Right,
         }
     }
 
-    pub fn change_direction(&mut self, direction: Movement_direction) {
+    pub fn change_direction(&mut self, direction: MovementDirection) {
         if !self.last_direction.is_in_opposite_direction(direction) && self.direction.is_none() {
             self.direction = Some(direction)
-        } else if self.direction.iter().any(|d| !d.is_in_opposite_direction(direction)) {
+        } else if self
+            .direction
+            .iter()
+            .any(|d| !d.is_in_opposite_direction(direction))
+        {
             self.next_direction = Some(direction)
         }
     }
@@ -55,17 +59,17 @@ impl Snake {
         self.last_direction = direction;
 
         let new_head = match direction {
-            Movement_direction::Up => Block(
+            MovementDirection::Up => Block(
                 (self.head.0) % self.width,
                 (self.head.1.checked_sub(1).unwrap_or(self.height - 1)) % self.height,
             ),
-            Movement_direction::Down => {
+            MovementDirection::Down => {
                 Block((self.head.0) % self.width, (self.head.1 + 1) % self.height)
             }
-            Movement_direction::Right => {
+            MovementDirection::Right => {
                 Block((self.head.0 + 1) % self.width, (self.head.1) % self.height)
             }
-            Movement_direction::Left => Block(
+            MovementDirection::Left => Block(
                 (self.head.0.checked_sub(1).unwrap_or(self.width - 1)) % self.width,
                 (self.head.1) % self.height,
             ),
