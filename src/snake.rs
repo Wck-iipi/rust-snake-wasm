@@ -93,7 +93,12 @@ impl Snake {
         let last_end = self.tail.pop();
 
         if self.tail.contains(&new_head) {
+            if self.total_score > self.max_score {
+                self.max_score = self.total_score;
+            }
+            let temporary_store = self.max_score;
             *self = Snake::new(self.width, self.height);
+            self.max_score = temporary_store;
         }
 
         self.head = new_head;

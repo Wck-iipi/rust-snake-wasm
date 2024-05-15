@@ -41,7 +41,7 @@ thread_local! {
         let x = evt.offset_x() as i32;
         let y = evt.offset_y() as i32;
         game.borrow_mut().change_screen_main_menu(x, y);
-    })) as Box<dyn FnMut(MouseEvent)>)
+    })) as Box<dyn FnMut(MouseEvent)>);
 }
 
 #[wasm_bindgen(start)]
