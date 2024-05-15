@@ -10,7 +10,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::{closure::Closure, JsCast};
-use web_sys::{console, window, KeyboardEvent};
+use web_sys::{console, window, KeyboardEvent, MouseEvent};
 
 thread_local! {
     static GAME: Rc<RefCell<Snake>> =
@@ -34,7 +34,14 @@ thread_local! {
       if let Some(direction) = direction {
         game.borrow_mut().change_direction(direction);
       }
-    })) as Box<dyn FnMut(KeyboardEvent)>)
+    })) as Box<dyn FnMut(KeyboardEvent)>);
+
+    static HANDLE_CLICK: Closure<dyn FnMut(MouseEvent)> =
+    Closure::wrap(Box::new(|evt: MouseEvent| GAME.with(|game| {
+        let x = evt.offset_x() as i32;
+        let y = evt.offset_y() as i32;
+        game.borrow_mut().change_screen_main_menu(x, y);
+    })) as Box<dyn FnMut(MouseEvent)>)
 }
 
 #[wasm_bindgen(start)]
@@ -54,6 +61,16 @@ pub fn start() {
             .add_event_listener_with_callback(
                 "keydown",
                 handle_keydown.as_ref().dyn_ref::<Function>().unwrap_throw(),
+            )
+            .unwrap_throw();
+    });
+
+    HANDLE_CLICK.with(|handle_click| {
+        window()
+            .unwrap_throw()
+            .add_event_listener_with_callback(
+                "click",
+                handle_click.as_ref().dyn_ref::<Function>().unwrap_throw(),
             )
             .unwrap_throw();
     });

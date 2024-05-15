@@ -1,4 +1,5 @@
 use js_sys::Math;
+use web_sys::console;
 
 use crate::canvas::Canvas;
 use crate::movement_direction::MovementDirection;
@@ -56,6 +57,14 @@ impl Snake {
             .any(|d| !d.is_in_opposite_direction(direction))
         {
             self.next_direction = Some(direction)
+        }
+    }
+
+    pub fn change_screen_main_menu(&mut self, x: i32, y: i32) {
+        console::log_1(&format!("I was called brother").into());
+        console::log_1(&format!("x: {}, y: {}", x, y).into());
+        if x >= 110 && x <= 413 && y >= 350 && y <= 450 {
+            self.start_game = true;
         }
     }
 

@@ -23,4 +23,6 @@ features = [
   'EventListener',
   'Event',
   'console',
+  'MouseEvent',
+
 ]
